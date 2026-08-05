@@ -202,7 +202,7 @@ input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(14,1
           <label class="remember">
             <input type="checkbox" name="remember"> Remember me
           </label>
-          <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
+          <a href="#" class="forgot-link">Forgot password?</a>
         </div>
 
         <button class="btn-login" type="submit">
@@ -217,7 +217,7 @@ input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(14,1
         </div>
 
         <div class="register-link-row">
-          Don't have an account? <a href="{{ route('register') }}">Register now</a>
+          Don't have an account? <a href="#">Register now</a>
         </div>
       </form>
     </div>

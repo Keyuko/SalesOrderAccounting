@@ -12,14 +12,21 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
-// Dummy auth route just for UI demonstration (replace with SSO later)
-Route::post('/login', function () {
-    // For now, bypass auth logic
-    // Just create a dummy user to bypass auth
-    $user = \App\Models\User::firstOrCreate(
-        ['email' => 'sales@test.com'],
-        ['name' => 'Test Sales', 'password' => bcrypt('password'), 'role' => 'sales']
-    );
+Route::post('/login', function (\Illuminate\Http\Request $request) {
+    // For now, bypass real password check and just login based on email typed in
+    $email = $request->input('email');
+    
+    // Find the user by email
+    $user = \App\Models\User::where('email', $email)->first();
+
+    if (!$user) {
+        // If they enter a random email, just fallback to sales dummy for demo purposes
+        $user = \App\Models\User::firstOrCreate(
+            ['email' => 'sales@test.com'],
+            ['name' => 'Sales Person', 'password' => bcrypt('password'), 'role' => 'sales']
+        );
+    }
+    
     Auth::login($user);
     return redirect('/dashboard');
 })->name('login.post');

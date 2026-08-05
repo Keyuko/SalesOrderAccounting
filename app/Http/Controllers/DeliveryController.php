@@ -3,62 +3,49 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Delivery;
+use Illuminate\Support\Facades\Log;
 
 class DeliveryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $deliveries = Delivery::with('deliveryOrder')->get();
+        
+        // Format for FullCalendar
+        $events = [];
+        foreach ($deliveries as $del) {
+            $events[] = [
+                'id' => $del->id,
+                'title' => 'DO: ' . ($del->deliveryOrder->do_number ?? 'Unknown') . ' - ' . ucfirst($del->status),
+                'start' => $del->deliveryOrder->delivery_date ?? date('Y-m-d'),
+                'extendedProps' => [
+                    'location' => $del->deliveryOrder->location ?? '-',
+                    'driver' => $del->driver_name ?? '-',
+                    'status' => $del->status
+                ],
+                'color' => $del->status == 'close' ? '#10B981' : ($del->status == 'canceled' ? '#EF4444' : '#0ea5e9')
+            ];
+        }
+
+        return view('deliveries.index', compact('deliveries', 'events'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function close(Request $request, $id)
     {
-        //
+        $delivery = Delivery::findOrFail($id);
+        $delivery->status = 'close';
+        $delivery->save();
+
+        return redirect()->back()->with('success', 'Delivery marked as Closed (Completed).');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function cancel(Request $request, $id)
     {
-        //
-    }
+        $delivery = Delivery::findOrFail($id);
+        $delivery->status = 'canceled';
+        $delivery->save();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->back()->with('error', 'Delivery marked as Canceled.');
     }
 }

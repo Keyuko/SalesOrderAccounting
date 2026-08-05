@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Delivery extends Model
 {
-    //
+    protected $guarded = [];
+
+    public function deliveryOrder() {
+        return $this->belongsTo(DeliveryOrder::class);
+    }
 }

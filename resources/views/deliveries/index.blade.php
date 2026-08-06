@@ -35,7 +35,7 @@
 
         @if(Auth::user()->role == 'delivery')
         <div id="actionButtons" style="display:flex; justify-content:flex-end; gap:10px;">
-            <button type="button" class="btn btn-primary" onclick="triggerChecklistModal()">Buku Muat</button>
+            <button type="button" class="btn btn-primary" onclick="openBukuMuat()">Buku Muat (Checklist)</button>
             <form id="closeForm" method="POST" style="margin:0;">
                 @csrf
                 <button type="submit" class="btn btn-success">Mark Close</button>
@@ -48,14 +48,12 @@
         </div>
         @else
         <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <button type="button" class="btn btn-primary" id="btnViewChecklist" style="display:none;" onclick="triggerChecklistModal()">Lihat Details Buku Muat</button>
+            <button type="button" class="btn btn-primary" onclick="openBukuMuat()">Lihat Buku Muat (Checklist)</button>
             <button type="button" class="btn" style="background:#E2E8F0;" onclick="closeEventModal()">Close Window</button>
         </div>
         @endif
     </div>
 </div>
-
-@include('deliveries.checklist_modal')
 @endsection
 
 @section('scripts')
@@ -92,13 +90,6 @@
                     document.getElementById('closeForm').style.display = 'none';
                     document.getElementById('cancelForm').style.display = 'none';
                 }
-                @else
-                var btnViewChecklist = document.getElementById('btnViewChecklist');
-                if (info.event.extendedProps.checklist) {
-                    btnViewChecklist.style.display = 'block';
-                } else {
-                    btnViewChecklist.style.display = 'none';
-                }
                 @endif
 
                 document.getElementById('eventModal').style.display = 'flex';
@@ -111,9 +102,20 @@
         document.getElementById('eventModal').style.display = 'none';
     }
 
-    function triggerChecklistModal() {
-        closeEventModal();
-        openChecklistModal(currentSelectedEventId, currentSelectedChecklist);
+    function openBukuMuat() {
+        var baseUrl = "{{ env('BUKU_MUAT_URL', 'http://localhost/buku-muat/checklist_kendaraan_out.php') }}";
+        
+        // Find the event data from fullcalendar's array based on currentSelectedEventId
+        var calEvent = @json($events).find(e => e.id == currentSelectedEventId);
+        
+        if (calEvent) {
+            var url = new URL(baseUrl);
+            url.searchParams.append('driver', calEvent.extendedProps.driver);
+            url.searchParams.append('id', calEvent.id);
+            // Any other matching fields here
+            
+            window.open(url.toString(), '_blank');
+        }
     }
 </script>
 <style>

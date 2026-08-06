@@ -71,7 +71,6 @@ Route::middleware(['auth'])->group(function () {
         
         Route::middleware('role:delivery')->group(function () {
             Route::patch('/deliveries/{delivery}/status', [DeliveryController::class, 'updateStatus'])->name('deliveries.updateStatus');
-            Route::post('/deliveries/{delivery}/checklist', [DeliveryController::class, 'storeChecklist'])->name('deliveries.storeChecklist');
         });
     });
 

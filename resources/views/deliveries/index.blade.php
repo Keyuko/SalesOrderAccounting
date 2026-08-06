@@ -35,6 +35,7 @@
 
         @if(Auth::user()->role == 'delivery')
         <div id="actionButtons" style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-primary" onclick="triggerChecklistModal()">Buku Muat</button>
             <form id="closeForm" method="POST" style="margin:0;">
                 @csrf
                 <button type="submit" class="btn btn-success">Mark Close</button>
@@ -46,22 +47,31 @@
             <button type="button" class="btn" style="background:#E2E8F0;" onclick="closeEventModal()">Close Window</button>
         </div>
         @else
-        <div style="display:flex; justify-content:flex-end;">
-            <button type="button" class="btn btn-primary" onclick="closeEventModal()">Close</button>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-primary" id="btnViewChecklist" style="display:none;" onclick="triggerChecklistModal()">Lihat Details Buku Muat</button>
+            <button type="button" class="btn" style="background:#E2E8F0;" onclick="closeEventModal()">Close Window</button>
         </div>
         @endif
     </div>
 </div>
+
+@include('deliveries.checklist_modal')
 @endsection
 
 @section('scripts')
 <script>
+    var currentSelectedEventId = null;
+    var currentSelectedChecklist = null;
+
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             events: @json($events),
             eventClick: function(info) {
+                currentSelectedEventId = info.event.id;
+                currentSelectedChecklist = info.event.extendedProps.checklist;
+
                 // Populate Modal
                 document.getElementById('modalTitle').innerText = info.event.title;
                 document.getElementById('modalLocation').innerText = info.event.extendedProps.location;
@@ -82,6 +92,13 @@
                     document.getElementById('closeForm').style.display = 'none';
                     document.getElementById('cancelForm').style.display = 'none';
                 }
+                @else
+                var btnViewChecklist = document.getElementById('btnViewChecklist');
+                if (info.event.extendedProps.checklist) {
+                    btnViewChecklist.style.display = 'block';
+                } else {
+                    btnViewChecklist.style.display = 'none';
+                }
                 @endif
 
                 document.getElementById('eventModal').style.display = 'flex';
@@ -92,6 +109,11 @@
 
     function closeEventModal() {
         document.getElementById('eventModal').style.display = 'none';
+    }
+
+    function triggerChecklistModal() {
+        closeEventModal();
+        openChecklistModal(currentSelectedEventId, currentSelectedChecklist);
     }
 </script>
 <style>

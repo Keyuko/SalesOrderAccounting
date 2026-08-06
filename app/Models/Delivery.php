@@ -11,4 +11,8 @@ class Delivery extends Model
     public function deliveryOrder() {
         return $this->belongsTo(DeliveryOrder::class);
     }
+
+    public function vehicleChecklist() {
+        return $this->hasOne(VehicleChecklist::class);
+    }
 }

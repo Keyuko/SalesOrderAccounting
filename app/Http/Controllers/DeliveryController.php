@@ -10,7 +10,7 @@ class DeliveryController extends Controller
 {
     public function index()
     {
-        $deliveries = Delivery::with('deliveryOrder')->get();
+        $deliveries = Delivery::with(['deliveryOrder', 'vehicleChecklist'])->get();
         
         // Format for FullCalendar
         $events = [];
@@ -22,7 +22,8 @@ class DeliveryController extends Controller
                 'extendedProps' => [
                     'location' => $del->deliveryOrder->location ?? '-',
                     'driver' => $del->driver_name ?? '-',
-                    'status' => $del->status
+                    'status' => $del->status,
+                    'checklist' => $del->vehicleChecklist
                 ],
                 'color' => $del->status == 'close' ? '#10B981' : ($del->status == 'canceled' ? '#EF4444' : '#0ea5e9')
             ];
@@ -47,5 +48,27 @@ class DeliveryController extends Controller
         $delivery->save();
 
         return redirect()->back()->with('error', 'Delivery marked as Canceled.');
+    }
+
+    public function storeChecklist(Request $request, $id)
+    {
+        $delivery = Delivery::findOrFail($id);
+        
+        // Remove _token from request data
+        $data = $request->except('_token');
+        
+        // Update driver name in delivery if provided
+        if (isset($data['driver_name'])) {
+            $delivery->driver_name = $data['driver_name'];
+            $delivery->save();
+        }
+
+        // Store or update checklist
+        $delivery->vehicleChecklist()->updateOrCreate(
+            ['delivery_id' => $delivery->id],
+            $data
+        );
+
+        return redirect()->back()->with('success', 'Buku Muat (Vehicle Checklist) saved successfully.');
     }
 }

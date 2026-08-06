@@ -68,6 +68,11 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('deliveries', DeliveryController::class);
         Route::post('deliveries/{delivery}/close', [DeliveryController::class, 'close'])->name('deliveries.close');
         Route::post('deliveries/{delivery}/cancel', [DeliveryController::class, 'cancel'])->name('deliveries.cancel');
+        
+        Route::middleware('role:delivery')->group(function () {
+            Route::patch('/deliveries/{delivery}/status', [DeliveryController::class, 'updateStatus'])->name('deliveries.updateStatus');
+            Route::post('/deliveries/{delivery}/checklist', [DeliveryController::class, 'storeChecklist'])->name('deliveries.storeChecklist');
+        });
     });
 
 });

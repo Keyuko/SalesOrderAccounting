@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('quotation_number')->unique();
             $table->string('customer_name');
             $table->date('requested_delivery_date');
+            $table->json('items')->nullable();
             $table->string('ppic_status')->default('pending'); // pending, approved, rejected
             $table->text('ppic_notes')->nullable();
             $table->timestamps();

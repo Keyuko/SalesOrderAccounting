@@ -71,7 +71,12 @@ Route::middleware(['auth'])->group(function () {
         
         Route::middleware('role:delivery')->group(function () {
             Route::patch('/deliveries/{delivery}/status', [DeliveryController::class, 'updateStatus'])->name('deliveries.updateStatus');
+            Route::put('deliveries/{delivery}/imei', [DeliveryController::class, 'updateImei'])->name('deliveries.updateImei');
         });
+        
+        Route::get('deliveries/{delivery}/tracking', [DeliveryController::class, 'getTrackingLink'])->name('deliveries.tracking');
     });
 
 });
+
+Route::post('/bigquery/sync', [App\Http\Controllers\BigQueryController::class, 'sync'])->name('bigquery.sync')->middleware('auth');

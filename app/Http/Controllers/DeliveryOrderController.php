@@ -9,9 +9,15 @@ use Illuminate\Support\Facades\Log;
 
 class DeliveryOrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $deliveryOrders = DeliveryOrder::all();
+        $query = DeliveryOrder::with('salesOrder.quotation', 'bqLines');
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $deliveryOrders = $query->get();
         return view('delivery_orders.index', compact('deliveryOrders'));
     }
 

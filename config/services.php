@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'gpsid' => [
+        'url' => env('GPSID_API_URL', 'https://portal.gps.id/backend/seen/public/'),
+        'username' => env('GPSID_USERNAME'),
+        'password' => env('GPSID_PASSWORD'),
+    ],
+
 ];

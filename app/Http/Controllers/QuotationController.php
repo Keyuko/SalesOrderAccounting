@@ -9,9 +9,15 @@ use Illuminate\Support\Facades\Log;
 
 class QuotationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $quotations = Quotation::all();
+        $query = Quotation::query();
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+
+        $quotations = $query->get();
         return view('quotations.index', compact('quotations'));
     }
 

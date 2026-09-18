@@ -11,6 +11,8 @@
         Welcome to Sales Order Accounting, {{ Auth::user()->name }}!
     </div>
 
+    @include('components.time-filter')
+
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
         @if(in_array(Auth::user()->role, ['sales', 'csr', 'ppic']))
         <a href="{{ route('quotations.index') }}" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; border: 1px solid #E2E8F0; text-decoration: none; color: inherit; display: block;">

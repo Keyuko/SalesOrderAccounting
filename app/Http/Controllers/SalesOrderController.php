@@ -9,9 +9,15 @@ use Illuminate\Support\Facades\Log;
 
 class SalesOrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $salesOrders = SalesOrder::all();
+        $query = SalesOrder::with('quotation');
+        
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+        }
+        
+        $salesOrders = $query->get();
         return view('sales_orders.index', compact('salesOrders'));
     }
 
